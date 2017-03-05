@@ -17,7 +17,7 @@ make creating exploratory map views effortless. Here's a crash course:
     gmap.scatter(marker_lats, marker_lngs, 'k', marker=True)
     gmap.heatmap(heat_lats, heat_lngs)
 
-    gmap.draw("mymap.html")
+    gmap.draw("mymap.html", ,api_key = '------------')
 
 
 Geocoding
@@ -45,12 +45,8 @@ Plot types
 
 Misc.
 -----
+Code edited from  `GitHub <https://github.com/vgm64/gmplot>`, as the author was 
+non responsive. 
 
-Code hosted on `GitHub <https://github.com/vgm64/gmplot>`_
-
-Install easily with ``pip install gmplot`` from PyPI.
-
-Inspired by Yifei Jiang's (jiangyifei@gmail.com) pygmaps_ module.
-
-.. _pygmaps: http://code.google.com/p/pygmaps/
-
+As such, download the package and manually install it in your virtual environment
+using the ``setup.py`` file.
