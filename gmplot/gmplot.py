@@ -204,35 +204,35 @@ class GoogleMapPlotter(object):
         f.close()
 
     # create new function to draw in accordance with outlined API
-    def heatmap_style_head(selfself,htmlfile,api_key=None):
+    def heatmap_style_head(self, f):
         f.write('<style>\n')
-        f.write('#map {height: 100%;}\n')
-        f.write('\thtml, body {\n')
-        f.write('\t\ttheight: 100%;\n')
-        f.write('\t\tmargin: 0;\n')
-        f.write('\t\tpadding: 0;\n')
-        f.write('\t}')
+        f.write('\t#map {\n')
+        f.write('\t\t height: 100%;\n')
+        f.write('\t\t}\n')
+        f.write('\t\thtml, body {\n')
+        f.write('\t\t height: 100%;\n')
+        f.write('\t\t\tmargin: 0;\n')
+        f.write('\t\t\tpadding: 0;\n')
+        f.write('\t\t}\n')
 
-        f.write('\t\t# floating-panel {\n')
+        f.write('\t#floating-panel {\n')
         f.write('\t\tposition: absolute;\n')
         f.write('\t\ttop: 10px;\n')
-        f.write('\t\tleft: 25 %;\n')
+        f.write('\t\tleft: 25%;\n')
         f.write('\t\tz-index: 5;\n')
         f.write('\t\tbackground-color:  #fff;\n')
         f.write('\t\tpadding: 5px;\n')
-        f.write('\t\tborder: 1px\n')
-        f.write('\t\tsolid  # 999;\n')
+        f.write('\t\tborder: 1px solid #999;\n')
         f.write('\t\ttext-align: center;\n')
         f.write('\t\tfont-family: "Roboto", "sans-serif";\n')
         f.write('\t\tline-height: 30px;\n')
         f.write('\t\tpadding-left: 10px;\n')
         f.write('\t}\n')
 
-        f.write('\t\t# floating-panel {\n')
-        f.write('\t\tbackground-color:  # fff;\n')
-        f.write('\t\tborder: 1px\n')
-        f.write('\t\tsolid  # 999;\n')
-        f.write('\t\tleft: 25 %;\n')
+        f.write('\t#floating-panel {\n')
+        f.write('\t\tbackground-color:  #fff;\n')
+        f.write('\t\tborder: 1px solid #999;\n')
+        f.write('\t\tleft: 25%;\n')
         f.write('\t\tpadding: 5px;\n')
         f.write('\t\tposition: absolute;\n')
         f.write('\t\ttop: 10px;\n')
@@ -240,7 +240,7 @@ class GoogleMapPlotter(object):
         f.write('\t\t}\n')
         f.write('\t</style>\n')
 
-    def draw_heatmap_gapi_style(self, htmlfile):
+    def draw_heatmap_gapi_style(self, htmlfile, api_key):
         """
              function initMap() {
                 map = new google.maps.Map(document.getElementById('map'), {
@@ -257,6 +257,7 @@ class GoogleMapPlotter(object):
 
         """
         f = open(htmlfile, 'w')
+        f.write('<!DOCTYPE html>\n')
         f.write('<html>\n')
         f.write('<head>\n')
         f.write(
@@ -265,15 +266,19 @@ class GoogleMapPlotter(object):
             '<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>\n')
         f.write('<title>Google Maps - visualization </title>\n')
         self.heatmap_style_head(f)
+        f.write('</head>\n')
+
 
         # f.write(
         #     '<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=visualization'
         #     '"></script>\n')
         #
-        f.write('<script>\n')
-        f.write('\tvar map, heatmap;\n')
+        f.write('<body>\n')
+        f.write('\t<div id="map"></div>\n')
+        f.write('\t<script>\n')
+        f.write('\t\tvar map, heatmap;\n')
 
-        f.write('\tfunction initMap() {\n')
+        f.write('\t\tfunction initMap() {\n')
         f.write('\t\tmap = new google.maps.Map(document.getElementById("map"), {\n')
         f.write('\t\t\tzoom: %d,\n' % (self.zoom))
         f.write('\t\t\tcenter: {lat:%f, lng: %f},\n' % (self.center[0], self.center[1]))
@@ -288,33 +293,25 @@ class GoogleMapPlotter(object):
 
         self.write_heatmap_getPoints(f)
 
-
-        self.write_heatmap(f)
-
-        f.write('\t}\n')
-        f.write('</script>\n')
-        f.write('</head>\n')
-        f.write(
-            '<body style="margin:0px; padding:0px;" onload="initialize()">\n')
-        f.write(
-            '\t<div id="map_canvas" style="width: 100%; height: 100%;"></div>\n')
+        # f.write('\t}\n')
+        f.write('\t</script>\n')
         if api_key:
             f.write(
-                '<script async defer src="https://maps.googleapis.com/maps/api/js?key=' + api_key +
-                '&callback=initMap"></script>')
-        f.write('</body>\n')
+                '\t<script async defer src="https://maps.googleapis.com/maps/api/js?key=' + api_key +
+                '&libraries=visualization&callback=initMap"></script>')
+        f.write('\t</body>\n')
         f.write('</html>\n')
         f.close()
 
     def write_heatmap_getPoints(self, f):
-            for heatmap_points, settings_string in self.heatmap_points:
-                f.write('\tfunction getPoints() {\n')
-                f.write('return [\n')
-                for heatmap_lat, heatmap_lng in heatmap_points:
-                    f.write('new google.maps.LatLng(%f, %f),\n' %
-                            (heatmap_lat, heatmap_lng))
-                f.write('];\n')
-                f.write('}\n')
+        for heatmap_points, settings_string in self.heatmap_points:
+            f.write('\tfunction getPoints() {\n')
+            f.write('return [\n')
+            for heatmap_lat, heatmap_lng in heatmap_points:
+                f.write('new google.maps.LatLng(%f, %f),\n' %
+                        (heatmap_lat, heatmap_lng))
+            f.write('];\n')
+            f.write('}\n')
 
     #############################################
     # # # # # # Low level Map Drawing # # # # # #
